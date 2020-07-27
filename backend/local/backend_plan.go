@@ -99,24 +99,6 @@ func (b *Local) opPlan(
 
 	// If we're refreshing before plan, perform that
 	baseState := runningOp.State
-	if op.PlanRefresh {
-		log.Printf("[INFO] backend/local: plan calling Refresh")
-
-		if b.CLI != nil {
-			b.CLI.Output(b.Colorize().Color(strings.TrimSpace(planRefreshing) + "\n"))
-		}
-
-		refreshedState, refreshDiags := tfCtx.Refresh()
-		diags = diags.Append(refreshDiags)
-		if diags.HasErrors() {
-			b.ReportResult(runningOp, diags)
-			return
-		}
-		baseState = refreshedState // plan will be relative to our refreshed state
-		if b.CLI != nil {
-			b.CLI.Output("\n------------------------------------------------------------------------")
-		}
-	}
 
 	// Perform the plan in a goroutine so we can be interrupted
 	var plan *plans.Plan
