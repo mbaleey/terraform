@@ -531,31 +531,13 @@ The -target option is not for routine use, and is provided only for exceptional 
 		ProviderSHA256s: c.providerSHA256s,
 	}
 
-	var operation walkOperation
-	if c.destroy {
-		operation = walkPlanDestroy
-	} else {
-		// Set our state to be something temporary. We do this so that
-		// the plan can update a fake state so that variables work, then
-		// we replace it back with our old state.
-		old := c.state
-		if old == nil {
-			c.state = states.NewState()
-		} else {
-			c.state = old.DeepCopy()
-		}
-		defer func() {
-			c.state = old
-		}()
-
-		operation = walkPlan
-	}
-
-	// Build the graph.
+	operation := walkPlan
 	graphType := GraphTypePlan
 	if c.destroy {
+		operation = walkPlanDestroy
 		graphType = GraphTypePlanDestroy
 	}
+
 	graph, graphDiags := c.Graph(graphType, nil)
 	diags = diags.Append(graphDiags)
 	if graphDiags.HasErrors() {
@@ -571,6 +553,12 @@ The -target option is not for routine use, and is provided only for exceptional 
 	}
 	p.Changes = c.changes
 	p.State = c.refreshState
+
+	// replace the working state with the updated state, so that immediate calls
+	// to Apply work as expected.
+	// FIXME: this needs to move out to the backend if we want -refresh=false
+	//        with apply
+	c.state = c.refreshState
 
 	return p, diags
 }
