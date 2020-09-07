@@ -346,10 +346,6 @@ func (m *Meta) RunOperation(b backend.Enhanced, opReq *backend.Operation) (*back
 	return op, nil
 }
 
-const (
-	ProviderSkipVerifyEnvVar = "TF_SKIP_PROVIDER_VERIFY"
-)
-
 // contextOpts returns the options to use to initialize a Terraform
 // context with the settings from this Meta.
 func (m *Meta) contextOpts() (*terraform.ContextOpts, error) {
@@ -390,9 +386,6 @@ func (m *Meta) contextOpts() (*terraform.ContextOpts, error) {
 	}
 
 	opts.ProviderSHA256s = m.providerPluginsLock().Read()
-	if v := os.Getenv(ProviderSkipVerifyEnvVar); v != "" {
-		opts.SkipProviderVerify = true
-	}
 
 	opts.Meta = &terraform.ContextMeta{
 		Env:                workspace,
