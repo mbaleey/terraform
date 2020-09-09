@@ -55,7 +55,7 @@ var (
 	X_shadow = newBasicID("shadow", "SHADOW", false)
 
 	// Concise plan diff output
-	X_concise_diff = newBasicID("concise_diff", "CONCISE_DIFF", true)
+	X_concise_diff = newBasicID("concise_diff", "CONCISE_DIFF", false)
 )
 
 // Global variables this package uses because we are a package
